@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>I Miss You</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
+        
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 420px;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 24px;
+            margin: 20px;
+        }
+
+        .screen {
+            display: none;
+            width: 90%;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 40px 30px;
+            border-radius: 24px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+            text-align: center;
+            animation: slideUp 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            box-sizing: border-box;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h2 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #1a1a1a;
+            letter-spacing: -0.02em;
+        }
+
+        .emoji-header {
+            font-size: 48px;
+            margin-bottom: 18px;
+            display: block;
+        }
+
+        p {
+            font-size: 16px;
+            color: #4a5568;
+            line-height: 1.7;
+            margin-bottom: 28px;
+            font-weight: 400;
+        }
+
+        button {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            color: white;
+            border: none;
+            padding: 16px 32px;
+            border-radius: 50px;
+            font-size: 16px;
+            font-family: 'Inter', sans-serif;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            width: 100%;
+            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.4);
+            position: relative;
+            overflow: hidden;
+            letter-spacing: 0.5px;
+            text-transform: none;
+        }
+
+        button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        button:hover::before {
+            left: 100%;
+        }
+
+        button:active {
+            transform: translateY(2px);
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.3);
+        }
+
+        .quote-box {
+            font-style: italic;
+            color: #2d3748;
+            font-weight: 500;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            padding: 20px;
+            border-radius: 16px;
+            border-left: 4px solid #6366f1;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            line-height: 1.6;
+        }
+
+        /* Restored Landscape Image CSS */
+        .card-photo {
+            width: 100%;
+            max-width: 280px;
+            height: 200px; /* Restored back to the perfect landscape height */
+            object-fit: cover;
+            border-radius: 16px;
+            margin: 0 auto 20px auto;
+            display: block;
+            border: 2px solid rgba(99, 102, 241, 0.2);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+
+        /* Game Area CSS */
+        #game-area {
+            position: relative;
+            height: 240px;
+            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+            border-radius: 20px;
+            margin-bottom: 24px;
+            overflow: hidden;
+            border: 2px solid rgba(99, 102, 241, 0.2);
+            box-shadow: inset 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .drop {
+            position: absolute;
+            font-size: 38px;
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 12px;
+            margin: -12px;
+            filter: drop-shadow(0 2px 8px rgba(0,0,0,0.1));
+        }
+        
+        .drop:hover {
+            transform: scale(1.1);
+        }
+        
+        .drop:active {
+            transform: scale(0.8) !important;
+            filter: drop-shadow(0 1px 4px rgba(0,0,0,0.2));
+        }
+
+        /* Final Card CSS */
+        .final-card-inner {
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            border: 1px solid rgba(99, 102, 241, 0.1);
+            padding: 24px;
+            border-radius: 20px;
+            margin-bottom: 24px;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+        }
+        
+        .photo-placeholder {
+            background: transparent;
+            border-radius: 16px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 18px;
+            border: none;
+        }
+
+        .progress-text {
+            font-size: 18px;
+            font-weight: 600;
+            color: #6366f1;
+            margin-bottom: 12px;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 480px) {
+            .container {
+                margin: 10px;
+                border-radius: 20px;
+            }
+            
+            .screen {
+                padding: 35px 25px;
+                width: 92%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    
+    <div id="screen1" class="screen active">
+        <div class="emoji-header">🥺</div>
+        <h2>I Miss You...</h2>
+        <p>Dear <strong>Aritri</strong>,<br>Meee missing you a lot right now... Ik things have been messy but I need you to see this!!</p>
+        <button onclick="nextScreen('screen1', 'screen2')">Open Message 💌</button>
+    </div>
+
+    <div id="screen2" class="screen">
+        <div class="emoji-header">🌧️</div>
+        <h2>The Silence Hurts</h2>
+        <p>I blocked you because I felt unwanted and unknown.... Seeing you give your attention elsewhere hurts me!!!!<br><br>But tbh...this silence hurting even more!!</p>
+        <button onclick="nextScreen('screen2', 'screen3')">See More</button>
+    </div>
+
+    <div id="screen3" class="screen">
+        <div class="emoji-header">❤️</div>
+        <h2>My Words For You</h2>
+        <p class="quote-box">Mee veryy sorry I reacted omnie kore....and I am sorry je ami toke omnie gaali diyechi....sorry for everything babe
+         I am missing my girl!!! mee missing youuu soo muchhh!!! Please.... let's fix this!!</p>
+        <p style="margin-bottom: 0; color: #6366f1; font-weight: 500;">- <strong>Alap</strong></p>
+        <button onclick="nextScreen('screen3', 'screen4')">Continue ➔</button>
+    </div>
+
+    <div id="screen4" class="screen">
+        <h2>Our Memories</h2>
+        <p>Moments I hold close to my heart.</p>
+        
+        <img src="our_memory.jpg" alt="Aritri and Alap" class="card-photo">
+        
+        <button onclick="nextScreen('screen4', 'screen5'); initGame();">Next</button>
+    </div>
+
+    <div id="screen5" class="screen">
+        <div class="emoji-header">🥺</div>
+        <h2>Wipe the Tears</h2>
+        <p>Tap each teardrop to forgive me and say "I miss you too".</p>
+        <div id="game-area"></div>
+        <p class="progress-text"><span id="score">0</span>/10 tears wiped 💙</p>
+    </div>
+
+    <div id="screen6" class="screen">
+        <div class="emoji-header">💙</div>
+        <h2>Heart's Call</h2>
+        <p>No matter how quiet it gets,<br>or how much we fight with each other,<br>my heart always finds its way back to you!!!</p>
+        <button onclick="nextScreen('screen6', 'screen7')">View Your Card</button>
+    </div>
+
+    <div id="screen7" class="screen">
+        <h2>Your Miss You Card 💙</h2>
+        <div class="final-card-inner">
+            <div class="emoji-header">🥺</div>
+            <h3 style="margin: 0 0 12px 0; color: #1a1a1a; font-weight: 600;">I Miss You...</h3>
+            <p style="margin-bottom: 16px; font-size: 16px;"><strong>Aritri</strong> 💝 <strong>Alap</strong></p>
+            
+        <div class="photo-placeholder" style="height: auto; overflow: hidden; border-radius: 16px;">
+
+                <video src="our_video.mp4" class="card-photo" style="height: 300px; margin-bottom: 0; object-fit: cover; object-position: center; transform: rotate(270deg);" autoplay loop muted playsinline></video>
+
+            </div>
+            
+            <p style="font-size: 15px; margin-bottom: 0; font-weight: 600; color: #6366f1;">Baby, I'm sorry. I miss you so much.❤️</p>
+        </div>
+        <button onclick="location.reload()">View Again</button>
+    </div>
+
+</div>
+
+<script>
+    function nextScreen(currentId, nextId) {
+        document.getElementById(currentId).classList.remove('active');
+        document.getElementById(nextId).classList.add('active');
+    }
+
+    // Enhanced Mini game logic
+    function initGame() {
+        const area = document.getElementById('game-area');
+        area.innerHTML = '';
+        let wiped = 0;
+        document.getElementById('score').innerText = wiped;
+
+        for (let i = 0; i < 10; i++) {
+            let drop = document.createElement('div');
+            drop.className = 'drop';
+            drop.innerHTML = '💧';
+            
+            // Better random positioning
+            drop.style.left = Math.floor(Math.random() * 70) + '%';
+            drop.style.top = Math.floor(Math.random() * 70) + '%';
+            
+            // Enhanced interaction handling
+            const handleInteraction = function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                this.style.opacity = '0';
+                this.style.transform = 'scale(0.5) translateY(20px)';
+                setTimeout(() => {
+                    this.remove();
+                }, 200);
+                
+                wiped++;
+                document.getElementById('score').innerText = wiped;
+                
+                if (wiped === 10) {
+                    setTimeout(() => {
+                        nextScreen('screen5', 'screen6');
+                    }, 800);
+                }
+            };
+
+            drop.addEventListener('click', handleInteraction);
+            drop.addEventListener('touchstart', handleInteraction, { passive: false });
+            
+            area.appendChild(drop);
+        }
+    }
+</script>
+
+</body>
+</html>
