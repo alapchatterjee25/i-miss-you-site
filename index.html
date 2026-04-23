@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>I Miss You</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
+        
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* Floating Background Hearts */
+        .bg-hearts {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            overflow: hidden; z-index: 0; pointer-events: none;
+        }
+
+        .bg-heart {
+            position: absolute;
+            color: rgba(255, 255, 255, 0.4);
+            animation: floatUp linear infinite;
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(100vh) scale(0.5) rotate(0deg); opacity: 0; }
+            20% { opacity: 0.8; }
+            80% { opacity: 0.8; }
+            100% { transform: translateY(-20vh) scale(1.5) rotate(360deg); opacity: 0; }
+        }
+
+        /* Magical Cursor Trail */
+        .cursor-heart {
+            position: absolute;
+            pointer-events: none;
+            z-index: 9999;
+            font-size: 14px;
+            animation: fadeTrail 0.8s ease-out forwards;
+        }
+
+        @keyframes fadeTrail {
+            0% { opacity: 1; transform: scale(1) translateY(0); }
+            100% { opacity: 0; transform: scale(0.3) translateY(-20px); }
+        }
+
+        /* Explosion Hearts for Minigame Win */
+        .explosion-heart {
+            position: absolute;
+            font-size: 24px;
+            pointer-events: none;
+            z-index: 100;
+            animation: explode 1s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
+        }
+
+        @keyframes explode {
+            0% { transform: translate(-50%, -50%) scale(0.5); opacity: 1; }
+            100% { transform: translate(var(--tx), var(--ty)) scale(1.5) rotate(var(--rot)); opacity: 0; }
+        }
+
+        .container {
+            width: 100%; max-width: 420px;
+            height: 100%; max-height: 850px;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.12), inset 0 0 0 1px rgba(255,255,255,0.5);
+            position: relative; z-index: 1;
+            display: flex; justify-content: center; align-items: center;
+            border-radius: 30px; margin: 20px; overflow: hidden;
+        }
+
+        .screen {
+            display: none; width: 88%;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 45px 30px; border-radius: 28px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.05), 0 5px 15px rgba(0,0,0,0.03);
+            text-align: center; box-sizing: border-box;
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            transform: scale(0.95); opacity: 0;
+        }
+
+        .screen.active {
+            display: block;
+            animation: popIn 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+
+        @keyframes popIn {
+            0% { opacity: 0; transform: translateY(40px) scale(0.9); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        h2 { font-size: 26px; font-weight: 600; margin-bottom: 14px; color: #1a1a1a; letter-spacing: -0.03em; }
+
+        .emoji-header {
+            font-size: 54px; margin-bottom: 20px; display: inline-block;
+            animation: gentlePulse 2.5s infinite ease-in-out;
+            filter: drop-shadow(0 10px 15px rgba(0,0,0,0.1));
+        }
+
+        @keyframes gentlePulse {
+            0%, 100% { transform: scale(1) translateY(0); }
+            50% { transform: scale(1.1) translateY(-5px); }
+        }
+
+        p { font-size: 16px; color: #4a5568; line-height: 1.8; margin-bottom: 30px; font-weight: 400; }
+
+        button {
+            background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%); 
+            color: white; border: none; padding: 18px 32px;
+            border-radius: 50px; font-size: 16px; font-family: 'Inter', sans-serif;
+            font-weight: 600; cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            width: 100%; box-shadow: 0 10px 20px rgba(161, 140, 209, 0.3);
+            position: relative; overflow: hidden; letter-spacing: 0.5px;
+        }
+
+        button::after {
+            content: ''; position: absolute; top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            transition: left 0.5s ease;
+        }
+
+        button:hover { transform: translateY(-3px); box-shadow: 0 15px 25px rgba(161, 140, 209, 0.4); }
+        button:hover::after { left: 100%; }
+        button:active { transform: translateY(1px); box-shadow: 0 5px 10px rgba(161, 140, 209, 0.3); }
+
+        .quote-box {
+            font-style: italic; color: #2d3748; font-weight: 500;
+            background: linear-gradient(135deg, #ffffff 0%, #fdf2f8 100%);
+            padding: 24px; border-radius: 20px; border-left: 4px solid #fbc2eb;
+            margin-bottom: 24px; box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+            line-height: 1.7; position: relative;
+        }
+
+        .card-photo {
+            width: 100%; max-width: 280px; height: 200px;
+            object-fit: cover; border-radius: 20px;
+            margin: 0 auto 24px auto; display: block;
+            border: 3px solid white; box-shadow: 0 12px 25px rgba(0,0,0,0.12);
+            transition: transform 0.3s ease;
+        }
+
+        .card-photo:hover { transform: scale(1.03) rotate(-1deg); }
+
+        #game-area {
+            position: relative; height: 260px;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); 
+            border-radius: 24px; margin-bottom: 24px; overflow: hidden;
+            border: 2px dashed rgba(161, 140, 209, 0.4);
+            box-shadow: inset 0 4px 10px rgba(0,0,0,0.02);
+        }
+
+        .drop {
+            position: absolute; font-size: 42px; cursor: pointer;
+            user-select: none; transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            padding: 10px; margin: -10px; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.15));
+            animation: floatTear 3s ease-in-out infinite alternate;
+        }
+        
+        @keyframes floatTear {
+            0% { transform: translateY(0px); }
+            100% { transform: translateY(-10px); }
+        }
+
+        /* Final Card Animated Glowing Border */
+        .final-card-wrapper {
+            position: relative; padding: 4px; border-radius: 26px;
+            background: linear-gradient(45deg, #ff9a9e, #fecfef, #a18cd1, #fbc2eb);
+            background-size: 300% 300%;
+            animation: shimmerGradient 4s ease infinite;
+            margin-bottom: 24px;
+        }
+
+        @keyframes shimmerGradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .final-card-inner {
+            background: white; padding: 28px 24px;
+            border-radius: 22px; position: relative; overflow: hidden;
+        }
+
+        .photo-placeholder {
+            background: transparent; border-radius: 16px; display: flex;
+            justify-content: center; align-items: center; margin-bottom: 20px; border: none;
+        }
+
+        .progress-text {
+            font-size: 18px; font-weight: 600; color: #a18cd1; margin-bottom: 12px;
+            background: rgba(161, 140, 209, 0.1); padding: 8px 16px;
+            border-radius: 20px; display: inline-block;
+        }
+
+        @media (max-width: 480px) {
+            .container { margin: 10px; border-radius: 24px; }
+            .screen { padding: 40px 25px; width: 92%; }
+            .emoji-header { font-size: 48px; }
+            h2 { font-size: 22px; }
+        }
+    </style>
+</head> 
+<body>
+
+<div class="bg-hearts" id="bg-hearts"></div>
+
+<div class="container"> 
+    
+    <div id="screen1" class="screen active"> 
+        <div class="emoji-header">🥺</div> 
+        <h2>I Miss You...</h2> 
+        <p>Dear <strong>Aritri</strong>,<br>Meee missing you a lot right now... Ik things have been messy but I need you to see this!!</p>
+        <button onclick="nextScreen('screen1', 'screen2')">Open Message 💌</button> 
+    </div>
+
+    <div id="screen2" class="screen">
+        <div class="emoji-header">🌧️</div>
+        <h2>The Silence Hurts</h2>
+        <p>I blocked you because I felt unwanted and unknown.... Seeing you give your attention elsewhere hurts me!!!!<br><br>But tbh...this silence hurting even more!!</p>
+        <button onclick="nextScreen('screen2', 'screen3')">See More</button>
+    </div>
+
+    <div id="screen3" class="screen">
+        <div class="emoji-header">❤️</div>
+        <h2>My Words For You</h2>
+        <p class="quote-box">Mee veryy sorry I reacted omnie kore....and I am sorry je ami toke omnie gaali diyechi....sorry for everything babe. I am missing my girl!!! mee missing youuu soo muchhh!!! Please.... let's fix this!!</p>
+        <p style="margin-bottom: 0; color: #a18cd1; font-weight: 600; font-size: 18px;">- <strong>Alap</strong></p>
+        <button onclick="nextScreen('screen3', 'screen4')">Continue ➔</button>
+    </div>
+
+    <div id="screen4" class="screen">
+        <h2>Our Memories</h2>
+        <p>Moments I hold close to my heart.</p>
+        <img src="our_memory.jpg" alt="Aritri and Alap" class="card-photo">
+        <button onclick="nextScreen('screen4', 'screen5'); initGame();">Next</button>
+    </div>
+
+    <div id="screen5" class="screen">
+        <div class="emoji-header">🥺</div>
+        <h2>Wipe the Tears</h2>
+        <p>Tap each teardrop to forgive me and say "I miss you too".</p>
+        <div id="game-area"></div>
+        <p class="progress-text"><span id="score">0</span>/10 tears wiped 💖</p>
+    </div>
+
+    <div id="screen6" class="screen">
+        <div class="emoji-header">💙</div>
+        <h2>Heart's Call</h2>
+        <p>No matter how quiet it gets,<br>or how much we fight with each other,<br>my heart always finds its way back to you!!!</p>
+        <button onclick="nextScreen('screen6', 'screen7')">View Your Card</button>
+    </div>
+
+    <div id="screen7" class="screen">
+        <h2>Your Miss You Card 💖</h2>
+        
+        <div class="final-card-wrapper">
+            <div class="final-card-inner">
+                <div class="emoji-header">🥺</div>
+                <h3 style="margin: 0 0 12px 0; color: #1a1a1a; font-weight: 600;">I Miss You...</h3>
+                <p style="margin-bottom: 16px; font-size: 16px;"><strong>Aritri</strong> 💝 <strong>Alap</strong></p>
+                
+                <div class="photo-placeholder" style="height: auto; overflow: hidden; border-radius: 16px;">
+                    <video src="our_video.mp4" class="card-photo" style="height: 300px; margin-bottom: 0; object-fit: cover; object-position: center; transform: rotate(270deg);" autoplay loop muted playsinline></video>
+                </div>
+                
+                <p style="font-size: 16px; margin-bottom: 0; font-weight: 600; color: #a18cd1;">Baby, I'm sorry. I miss you so much. ❤️</p>
+            </div>
+        </div>
+        
+        <button onclick="location.reload()">View Again</button>
+    </div>
+
+</div>
+
+<script>
+    // 1. Floating Background Hearts
+    function createHearts() {
+        const bg = document.getElementById('bg-hearts');
+        const hearts = ['🤍', '💖', '✨', '🌸'];
+        for(let i = 0; i < 15; i++) {
+            let heart = document.createElement('div');
+            heart.className = 'bg-heart';
+            heart.innerHTML = hearts[Math.floor(Math.random() * hearts.length)];
+            heart.style.left = Math.random() * 100 + 'vw';
+            heart.style.animationDuration = (Math.random() * 5 + 4) + 's';
+            heart.style.animationDelay = Math.random() * 5 + 's';
+            heart.style.fontSize = (Math.random() * 20 + 15) + 'px';
+            bg.appendChild(heart);
+        }
+    }
+    createHearts();
+
+    // 2. Magical Cursor Trail (Mouse & Touch)
+    let lastTrailTime = 0;
+    const createTrail = (x, y) => {
+        const now = Date.now();
+        if (now - lastTrailTime < 40) return; // Limit creation rate
+        lastTrailTime = now;
+
+        const trail = document.createElement('div');
+        trail.className = 'cursor-heart';
+        trail.innerHTML = ['💖', '✨', '💕'][Math.floor(Math.random() * 3)];
+        trail.style.left = x + 'px';
+        trail.style.top = y + 'px';
+        document.body.appendChild(trail);
+
+        setTimeout(() => { trail.remove(); }, 800);
+    };
+
+    document.addEventListener('mousemove', (e) => createTrail(e.clientX, e.clientY));
+    document.addEventListener('touchmove', (e) => createTrail(e.touches[0].clientX, e.touches[0].clientY), {passive: true});
+
+    // 3. Screen Navigation
+    function nextScreen(currentId, nextId) {
+        const currentScreen = document.getElementById(currentId);
+        const nextScreen = document.getElementById(nextId);
+        
+        currentScreen.style.opacity = '0';
+        currentScreen.style.transform = 'scale(0.95)';
+        
+        setTimeout(() => {
+            currentScreen.classList.remove('active');
+            currentScreen.style.opacity = '';
+            currentScreen.style.transform = '';
+            nextScreen.classList.add('active');
+        }, 300);
+    }
+
+    // 4. Win Explosion Effect
+    function triggerWinExplosion() {
+        const area = document.getElementById('game-area');
+        const rect = area.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+
+        for(let i = 0; i < 30; i++) {
+            let heart = document.createElement('div');
+            heart.className = 'explosion-heart';
+            heart.innerHTML = ['💖', '💕', '💘', '✨'][Math.floor(Math.random() * 4)];
+            heart.style.left = centerX + 'px';
+            heart.style.top = centerY + 'px';
+            
+            // Calculate random trajectory
+            const angle = Math.random() * Math.PI * 2;
+            const distance = Math.random() * 150 + 50;
+            const tx = Math.cos(angle) * distance + 'px';
+            const ty = Math.sin(angle) * distance + 'px';
+            const rot = (Math.random() * 360) + 'deg';
+            
+            heart.style.setProperty('--tx', tx);
+            heart.style.setProperty('--ty', ty);
+            heart.style.setProperty('--rot', rot);
+            
+            document.body.appendChild(heart);
+            setTimeout(() => heart.remove(), 1000);
+        }
+    }
+
+    // 5. Mini game logic
+    function initGame() { 
+        const area = document.getElementById('game-area');
+        area.innerHTML = '';
+        let wiped = 0;
+        document.getElementById('score').innerText = wiped;
+
+        for (let i = 0; i < 10; i++) {
+            let drop = document.createElement('div');
+            drop.className = 'drop';
+            drop.innerHTML = '💧';
+            
+            drop.style.left = Math.floor(Math.random() * 75) + 5 + '%';
+            drop.style.top = Math.floor(Math.random() * 75) + 5 + '%';
+            drop.style.animationDelay = (Math.random() * 2) + 's';
+            
+            const handleInteraction = function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                this.innerHTML = '✨';
+                this.style.transform = 'scale(1.5)';
+                this.style.opacity = '0';
+                
+                setTimeout(() => { this.remove(); }, 300);
+                
+                wiped++;
+                document.getElementById('score').innerText = wiped;
+                
+                if (wiped === 10) {
+                    triggerWinExplosion(); // Trigger the reward!
+                    setTimeout(() => {
+                        nextScreen('screen5', 'screen6');
+                    }, 1200); // Give a bit more time to see the explosion
+                }
+            };
+
+            drop.addEventListener('click', handleInteraction, {once: true}); 
+            drop.addEventListener('touchstart', handleInteraction, { passive: false, once: true });
+            
+            area.appendChild(drop); 
+        }
+    } 
+</script>
+
+</body>
+</html>
